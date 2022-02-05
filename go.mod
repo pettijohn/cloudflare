@@ -7,4 +7,4 @@ require (
 	github.com/libdns/cloudflare v0.1.0
 )
 
-replace github.com/caddy-dns/cloudflare => github.com/pettijohn/cloudflare master
+replace github.com/caddy-dns/cloudflare => github.com/pettijohn/cloudflare v0.0.0-20220205174159-56cfaa5cbeec
