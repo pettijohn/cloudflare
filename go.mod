@@ -1,4 +1,4 @@
-module github.com/caddy-dns/cloudflare
+module github.com/pettijohn/cloudflare
 
 go 1.14
 
@@ -7,4 +7,4 @@ require (
 	github.com/libdns/cloudflare v0.1.0
 )
 
-replace github.com/caddy-dns/cloudflare => github.com/pettijohn/cloudflare v0.9.1
+replace github.com/caddy-dns/cloudflare => github.com/pettijohn/cloudflare v0.9.2
