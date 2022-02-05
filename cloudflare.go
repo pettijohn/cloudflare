@@ -1,6 +1,10 @@
 package cloudflare
 
 import (
+	"io/ioutil"
+	"os"
+	"strings"
+
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/libdns/cloudflare"
@@ -28,6 +32,23 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 	return nil
 }
 
+// If the config value is a valid path to a file, read & return the contents of the file into a string.
+// Else return original input (noop).
+func TryReadFile(testValue string) string {
+	_, err := os.Stat(testValue)
+	if err != nil {
+		// Valid file exists - read the contents & return it
+		buf, err2 := ioutil.ReadFile(testValue)
+		if err2 != nil {
+			return testValue
+		}
+		return strings.TrimSpace(string(buf))
+	} else {
+		// File does not exist, return the same value that was passed in
+		return testValue
+	}
+}
+
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
 //
 // cloudflare [<api_token>] {
@@ -38,7 +59,7 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
 		if d.NextArg() {
-			p.Provider.APIToken = d.Val()
+			p.Provider.APIToken = TryReadFile(d.Val())
 		}
 		if d.NextArg() {
 			return d.ArgErr()
@@ -49,7 +70,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				if p.Provider.APIToken != "" {
 					return d.Err("API token already set")
 				}
-				p.Provider.APIToken = d.Val()
+				p.Provider.APIToken = TryReadFile(d.Val())
 				if d.NextArg() {
 					return d.ArgErr()
 				}
